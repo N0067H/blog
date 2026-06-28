@@ -8,8 +8,8 @@ title: "SeungYeop Ryu"
 description: >-
   Personal blog by SeungYeop Ryu
 
-url: https://noobth-homelab.github.io
-baseurl: "/blog"
+url: https://blog.noobth.dev
+baseurl: ""
 repository: noobth-homelab/blog
 
 author:
