@@ -1,0 +1,59 @@
+# Site Settings
+theme: jekyll-text-theme
+text_skin: default
+highlight_theme: tomorrow
+
+locale: en
+title: "SeungYeop Ryu"
+description: >-
+  Personal blog by SeungYeop Ryu
+
+url: https://noobth-homelab.github.io
+baseurl: "/blog"
+repository: noobth-homelab/blog
+
+author:
+  name: SeungYeop Ryu
+  email: n006h3417h@gmail.com
+  github: N0067H
+
+license: CC-BY-SA-4.0
+
+toc:
+  selectors: "h1,h2,h3"
+
+mathjax: true
+
+paginate: 8
+paginate_path: /page:num
+
+comments:
+  provider: disqus
+  disqus:
+    shortname: noobth
+
+analytics:
+  provider: google
+  google:
+    tracking_id: G-ETTJ1S3XC9
+    anonymize_ip: false
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: article
+      sharing: true
+      license: false
+      aside:
+        toc: true
+      show_subscribe: false
+
+permalink: /:year/:month/:day/:title.html
+timezone: Asia/Seoul
+
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-sitemap
