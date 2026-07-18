@@ -1,6 +1,7 @@
 ---
 title: "The Practice of Programming"
 date: 2026-07-18
+excerpt: "프로그래머를 더욱 효과적이고 생산적으로 만들어 주는 실용적인 프로그래밍 지침서라고 한다."
 tags: book
 ---
 
