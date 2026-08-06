@@ -1,5 +1,5 @@
 ---
-title: "Transactional Outbox 패턴"
+title: "Transactional Outbox"
 date: 2026-07-30
 excerpt: "DB 변경과 메시지 발행을 함께 다룰 때 왜 Transactional Outbox가 필요한지 간단히 정리한다."
 tags: distributed-systems
