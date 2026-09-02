@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Admin</title>
+    <style>
+      :root {
+        --bg: #f7f7f7;
+        --panel: #ffffff;
+        --line: #e6e6e6;
+        --line-strong: #d8d8d8;
+        --text: #4d4d4c;
+        --muted: #8e908c;
+        --accent: #3e999f;
+        --accent-soft: #eef8f8;
+        --chip: #f3f3f3;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Nanum Gothic", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+      }
+
+      .sidebar,
+      .editor {
+        padding: 24px;
+      }
+
+      .sidebar {
+        border-right: 1px solid var(--line);
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar .panel {
+        height: calc(100vh - 48px);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .subtle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .toolbar,
+      .meta-grid,
+      .actions {
+        display: grid;
+        gap: 12px;
+      }
+
+      .toolbar {
+        padding: 12px 20px 0;
+      }
+
+      .toolbar-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .toolbar-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: none;
+        letter-spacing: 0;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+      }
+
+      button:hover {
+        transform: none;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #ffffff;
+      }
+
+      .secondary {
+        background: var(--chip);
+        color: var(--text);
+      }
+
+      .list {
+        flex: 1;
+        overflow: auto;
+        padding: 10px 14px 14px;
+      }
+
+      .post-item {
+        display: block;
+        flex: none;
+        width: 100%;
+        height: auto;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 6px 9px;
+        margin-bottom: 4px;
+        box-shadow: none;
+        min-height: 0;
+        line-height: 1.2;
+      }
+
+      .post-item.active {
+        background: var(--accent-soft);
+        border-color: rgba(62, 153, 159, 0.18);
+      }
+
+      .post-item strong {
+        display: block;
+        margin-bottom: 1px;
+        font-size: 13px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .meta-line {
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.2;
+      }
+
+      .badge {
+        display: inline-block;
+        margin-right: 6px;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: var(--chip);
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .editor {
+        display: flex;
+        align-items: stretch;
+      }
+
+      .editor .panel {
+        width: 100%;
+        padding: 18px 20px 20px;
+      }
+
+      .meta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        display: block;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 8px 10px;
+        color: var(--text);
+      }
+
+      input {
+        height: 36px;
+        font-size: 13px;
+      }
+
+      textarea {
+        min-height: 70vh;
+        resize: vertical;
+        line-height: 1.85;
+        padding: 10px 22px 20px;
+        background: #ffffff;
+        font-size: 15px;
+        border-color: var(--line-strong);
+      }
+
+      .editor-shell {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 14px;
+        height: 100%;
+      }
+
+      .meta-section {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fcfcfc;
+      }
+
+      .content-section {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .content-section label {
+        display: inline-block;
+        align-self: flex-start;
+        font-size: 11px;
+        margin: 0;
+        line-height: 1;
+        padding: 0;
+        min-height: 0;
+        height: auto;
+        margin-bottom: 2px;
+      }
+
+      .content-section textarea {
+        display: block;
+        margin-top: 0;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: rgba(62, 153, 159, 0.55);
+        box-shadow: 0 0 0 3px rgba(62, 153, 159, 0.1);
+      }
+
+      #content {
+        font-family: "Nanum Gothic", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .checkbox {
+        width: auto;
+      }
+
+      .actions {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        margin-top: 18px;
+      }
+
+      .status {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 960px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar .panel {
+          height: auto;
+        }
+
+        .meta-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="panel">
+          <div class="header">
+            <h1>Blog Admin</h1>
+            <p class="subtle">파일 기반 글 목록과 간단한 편집기</p>
+          </div>
+          <div class="toolbar">
+            <div class="toolbar-row">
+              <button class="primary" id="new-post">New Post</button>
+              <label class="toolbar-toggle" for="show-drafts">
+                <input class="checkbox" id="show-drafts" type="checkbox" checked />
+                Draft 보기
+              </label>
+            </div>
+          </div>
+          <div class="list" id="post-list"></div>
+        </div>
+      </aside>
+      <main class="editor">
+        <div class="panel">
+          <div class="editor-shell">
+            <div class="meta-section">
+              <div class="meta-grid">
+                <div class="field">
+                  <label for="title">Title</label>
+                  <input id="title" type="text" />
+                </div>
+                <div class="field">
+                  <label for="date">Date</label>
+                  <input id="date" type="date" />
+                </div>
+                <div class="field full">
+                  <label for="slug">Slug</label>
+                  <input id="slug" type="text" placeholder="파일명에 들어갈 slug" />
+                </div>
+                <div class="field full">
+                  <label for="excerpt">Excerpt</label>
+                  <input id="excerpt" type="text" />
+                </div>
+                <div class="field full">
+                  <label for="tags">Tags</label>
+                  <input id="tags" type="text" placeholder="cpp, system-design" />
+                </div>
+              </div>
+            </div>
+            <div class="content-section">
+              <label for="content">Content</label>
+              <textarea id="content"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <div class="row">
+              <label for="draft" style="margin: 0">Draft</label>
+              <input class="checkbox" id="draft" type="checkbox" />
+              <span class="status" id="status">새 글을 만들거나 왼쪽 목록에서 선택하세요.</span>
+            </div>
+            <button class="primary" id="save">Save</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const state = {
+        items: [],
+        selectedPath: null,
+        extraMetadata: {},
+      };
+
+      const els = {
+        list: document.getElementById("post-list"),
+        newPost: document.getElementById("new-post"),
+        save: document.getElementById("save"),
+        status: document.getElementById("status"),
+        title: document.getElementById("title"),
+        date: document.getElementById("date"),
+        slug: document.getElementById("slug"),
+        excerpt: document.getElementById("excerpt"),
+        tags: document.getElementById("tags"),
+        content: document.getElementById("content"),
+        draft: document.getElementById("draft"),
+        showDrafts: document.getElementById("show-drafts"),
+      };
+
+      function setStatus(message) {
+        els.status.textContent = message;
+      }
+
+      function slugify(value) {
+        const slug = value
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        return slug || "untitled";
+      }
+
+      function today() {
+        const now = new Date();
+        return now.toISOString().slice(0, 10);
+      }
+
+      function editableValues() {
+        return {
+          original_path: state.selectedPath,
+          title: els.title.value.trim(),
+          date: els.date.value,
+          slug: els.slug.value.trim(),
+          excerpt: els.excerpt.value.trim(),
+          tags: els.tags.value,
+          content: els.content.value,
+          draft: els.draft.checked,
+          extra_metadata: state.extraMetadata,
+        };
+      }
+
+      function resetEditor() {
+        state.selectedPath = null;
+        state.extraMetadata = {};
+        els.title.value = "";
+        els.date.value = today();
+        els.slug.value = "";
+        els.excerpt.value = "";
+        els.tags.value = "";
+        els.content.value = "";
+        els.draft.checked = true;
+        renderList();
+        setStatus("새 글 작성 중");
+      }
+
+      function metadataToExtra(metadata) {
+        const extra = { ...metadata };
+        ["title", "date", "excerpt", "tags"].forEach((key) => delete extra[key]);
+        return extra;
+      }
+
+      async function loadList() {
+        const res = await fetch("/api/posts");
+        const data = await res.json();
+        state.items = data.items || [];
+        renderList();
+      }
+
+      function renderList() {
+        const visibleItems = state.items.filter((item) => els.showDrafts.checked || !item.draft);
+
+        if (!visibleItems.length) {
+          els.list.innerHTML = '<p class="subtle">글이 없습니다.</p>';
+          return;
+        }
+
+        els.list.innerHTML = visibleItems
+          .map((item) => {
+            const active = item.path === state.selectedPath ? "active" : "";
+            const badge = item.draft ? "Draft" : "Post";
+            const date = item.date || "";
+            return `
+              <button class="post-item ${active}" data-path="${item.path}">
+                <strong>${item.title || item.path}</strong>
+                <div class="meta-line"><span class="badge">${badge}</span>${date}</div>
+                <div class="meta-line">${item.path}</div>
+              </button>
+            `;
+          })
+          .join("");
+
+        els.list.querySelectorAll("[data-path]").forEach((button) => {
+          button.addEventListener("click", () => openPost(button.dataset.path));
+        });
+      }
+
+      async function openPost(path) {
+        const res = await fetch(`/api/post?path=${encodeURIComponent(path)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          setStatus(data.error || "불러오기에 실패했습니다.");
+          return;
+        }
+
+        const metadata = data.metadata || {};
+        state.selectedPath = data.path;
+        state.extraMetadata = metadataToExtra(metadata);
+        els.title.value = metadata.title || "";
+        els.date.value = (metadata.date || "").slice(0, 10);
+        els.slug.value = data.path.replace(/^(_posts|_drafts)\//, "").replace(/^\d{4}-\d{2}-\d{2}-/, "").replace(/\.md$/, "");
+        els.excerpt.value = metadata.excerpt || "";
+        els.tags.value = Array.isArray(metadata.tags) ? metadata.tags.join(", ") : metadata.tags || "";
+        els.content.value = data.content || "";
+        els.draft.checked = Boolean(data.draft);
+        renderList();
+        setStatus(`${data.path} 편집 중`);
+      }
+
+      async function savePost() {
+        const payload = editableValues();
+        if (!payload.title || !payload.date) {
+          setStatus("Title과 Date는 필수입니다.");
+          return;
+        }
+
+        if (!payload.slug) {
+          els.slug.value = slugify(payload.title);
+          payload.slug = els.slug.value;
+        }
+
+        setStatus("저장 중...");
+        const res = await fetch("/api/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setStatus(data.error || "저장에 실패했습니다.");
+          return;
+        }
+
+        state.selectedPath = data.path;
+        setStatus(`${data.path} 저장 완료`);
+        await loadList();
+        await openPost(data.path);
+      }
+
+      els.newPost.addEventListener("click", resetEditor);
+      els.save.addEventListener("click", savePost);
+      els.showDrafts.addEventListener("change", renderList);
+      els.title.addEventListener("input", () => {
+        if (!els.slug.value.trim()) {
+          els.slug.value = slugify(els.title.value);
+        }
+      });
+
+      resetEditor();
+      loadList().catch(() => setStatus("목록을 불러오지 못했습니다. admin_server.rb로 실행 중인지 확인하세요."));
+    </script>
+  </body>
+</html>

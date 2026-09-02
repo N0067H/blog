@@ -57,3 +57,10 @@ plugins:
   - jekyll-feed
   - jekyll-paginate
   - jekyll-sitemap
+
+exclude:
+  - admin.html
+  - admin
+  - admin_server.rb
+  - .admin_server.log
+  - .admin_server.pid

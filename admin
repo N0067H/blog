@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PID_FILE="$ROOT_DIR/.admin_server.pid"
+LOG_FILE="$ROOT_DIR/.admin_server.log"
+PORT="${PORT:-4001}"
+IDLE_TIMEOUT_SECONDS="${IDLE_TIMEOUT_SECONDS:-1800}"
+
+is_running() {
+  if [[ -f "$PID_FILE" ]]; then
+    local pid
+    pid="$(cat "$PID_FILE")"
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      return 0
+    fi
+
+    rm -f "$PID_FILE"
+  fi
+
+  if curl -fsS "http://127.0.0.1:${PORT}/api/status" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  return 1
+}
+
+run_server() {
+  if is_running; then
+    if [[ -f "$PID_FILE" ]]; then
+      echo "already running: pid $(cat "$PID_FILE")"
+    else
+      echo "already running"
+    fi
+    echo "url: http://127.0.0.1:${PORT}/admin.html"
+    exit 0
+  fi
+
+  (
+    cd "$ROOT_DIR"
+    : >"$LOG_FILE"
+    setsid env PORT="$PORT" IDLE_TIMEOUT_SECONDS="$IDLE_TIMEOUT_SECONDS" ruby admin_server.rb >>"$LOG_FILE" 2>&1 < /dev/null &
+    echo $! >"$PID_FILE"
+  )
+
+  sleep 1
+  if is_running; then
+    echo "started: pid $(cat "$PID_FILE")"
+    echo "url: http://127.0.0.1:${PORT}/admin.html"
+    echo "log: $LOG_FILE"
+  else
+    echo "failed to start. check log: $LOG_FILE" >&2
+    exit 1
+  fi
+}
+
+kill_server() {
+  if ! is_running; then
+    echo "not running"
+    exit 0
+  fi
+
+  if ! curl -fsS -X POST -d '' "http://127.0.0.1:${PORT}/api/shutdown" >/dev/null 2>&1; then
+    if [[ -f "$PID_FILE" ]]; then
+      local pid
+      pid="$(cat "$PID_FILE")"
+      kill "$pid" 2>/dev/null || true
+    fi
+  fi
+  rm -f "$PID_FILE"
+  echo "stopped"
+}
+
+status_server() {
+  if is_running; then
+    if [[ -f "$PID_FILE" ]]; then
+      echo "running: pid $(cat "$PID_FILE")"
+    else
+      echo "running"
+    fi
+    echo "url: http://127.0.0.1:${PORT}/admin.html"
+    echo "log: $LOG_FILE"
+  else
+    echo "not running"
+  fi
+}
+
+logs_server() {
+  if [[ -f "$LOG_FILE" ]]; then
+    tail -n 40 "$LOG_FILE"
+  else
+    echo "no log file"
+  fi
+}
+
+case "${1:-}" in
+  run)
+    run_server
+    ;;
+  kill|stop)
+    kill_server
+    ;;
+  restart)
+    kill_server || true
+    run_server
+    ;;
+  status)
+    status_server
+    ;;
+  logs)
+    logs_server
+    ;;
+  *)
+    echo "usage: ./admin {run|kill|stop|restart|status|logs}"
+    exit 1
+    ;;
+esac
