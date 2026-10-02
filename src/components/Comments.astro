@@ -1,0 +1,44 @@
+---
+type Props = { url: string; title: string; identifier?: string };
+const { url, title, identifier } = Astro.props;
+---
+
+<section aria-label="댓글" class="my-8">
+  <div
+    id="disqus_thread"
+    data-disqus-url={url}
+    data-disqus-title={title}
+    data-disqus-identifier={identifier}
+  >
+  </div>
+</section>
+
+<script is:inline>
+  if (!window.__disqusListener) {
+    window.__disqusListener = true;
+    document.addEventListener("astro:page-load", () => {
+      const thread = document.getElementById("disqus_thread");
+      if (!thread) return;
+      const url = thread.dataset.disqusUrl;
+      const title = thread.dataset.disqusTitle;
+      const identifier = thread.dataset.disqusIdentifier;
+      function configure() {
+        this.page.url = url;
+        this.page.title = title;
+        if (identifier) this.page.identifier = identifier;
+      }
+      if (window.DISQUS) {
+        window.DISQUS.reset({ reload: true, config: configure });
+      } else {
+        window.disqus_config = configure;
+        if (!document.getElementById("disqus-embed")) {
+          const script = document.createElement("script");
+          script.id = "disqus-embed";
+          script.src = "https://noobth.disqus.com/embed.js";
+          script.async = true;
+          document.head.appendChild(script);
+        }
+      }
+    });
+  }
+</script>

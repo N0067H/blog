@@ -1,8 +1,6 @@
 ---
-layout: article
-titles:
-  en: About
-key: page-about
+title: 소개
+description: 백엔드 엔지니어 류승엽의 기술 블로그입니다.
 ---
 
 안녕하세요! 백엔드 엔지니어 류승엽입니다.

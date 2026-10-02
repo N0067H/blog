@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+public/pagefind/
+.gems/
+_posts/
+_drafts/
+admin.html
+package-lock.json
