@@ -7,7 +7,7 @@ tags: lang, cpp
 
 C++26에 새로 추가된 **Compile-time Reflection**은 C++의 메타프로그래밍 방식을 크게 바꾸는 기능이다.
 
-## C++26 Reflection의 핵심
+## 0. Intro
 
 기존 C++에서는 타입의 멤버 이름, 타입, 함수 목록 같은 정보를 언어 차원에서 얻을 방법이 없었다.
 
@@ -28,7 +28,7 @@ constexpr auto r = ^^Person;
 
 `^^` 연산자는 타입이나 함수, 변수 등을 나타내는 메타 객체를 생성한다.
 
-## 메타 객체 (std::meta::info)
+## 1. The Core Type: `std::meta::info`
 
 ```cpp
 constexpr auto info = ^^Person;
@@ -46,7 +46,7 @@ enumerators_of(info);
 
 예를 들어 `members_of()`는 클래스의 멤버 목록을, `bases_of()`는 상속받은 기반 클래스를, `enumerators_of()`는 enum의 열거자를 반환한다.
 
-## Splicing
+## 2. Splicing
 
 Reflection의 핵심은 메타 정보를 읽는 것이 아니라, 그 정보를 이용해 새로운 코드를 생성하는 것이다. 이를 **Splicing**이라고 한다.
 
@@ -66,7 +66,7 @@ obj.age
 
 즉, 메타 객체를 실제 C++ 코드로 다시 삽입하는 과정이 바로 Splicing이다.
 
-## 이제 가능한 것들
+## 3. Newly Supported
 
 예를 들어 다음과 같은 구조체가 있다고 하자.
 
@@ -87,14 +87,14 @@ serialize(person);
 
 이 외에도 Reflection을 이용하면 다음과 같은 작업을 별도의 등록 과정 없이 구현할 수 있다.
 
-* JSON/XML 직렬화
-* ORM(Object-Relational Mapping)
-* RPC 코드 생성
-* GUI Property Editor
-* 자동 비교 연산 및 디버그 출력
-* 다양한 메타프로그래밍 기반 라이브러리
+- JSON/XML 직렬화
+- ORM(Object-Relational Mapping)
+- RPC 코드 생성
+- GUI Property Editor
+- 자동 비교 연산 및 디버그 출력
+- 다양한 메타프로그래밍 기반 라이브러리
 
-## Template Metaprogramming과의 차이
+## 4. vs. Template Metaprogramming
 
 기존 Template Metaprogramming(TMP)은 타입을 조작하는 데 매우 강력했다.
 
@@ -119,7 +119,7 @@ struct Person {
 
 반면 C++26 Reflection은 컴파일러가 가지고 있는 AST 기반 메타데이터를 노출하므로 이러한 정보까지 직접 다룰 수 있다. 덕분에 기존에는 매크로나 코드 생성기로 해결하던 문제들을 순수 C++만으로 구현할 수 있게 되었다.
 
-## 결론
+## 5. Wrapping Up
 
 개인적으로는 C++20의 Concepts 이후 가장 큰 변화라고 생각한다.
 
