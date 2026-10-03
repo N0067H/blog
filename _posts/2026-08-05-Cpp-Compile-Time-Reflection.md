@@ -2,7 +2,7 @@
 title: "C++ Compile Time Reflection"
 date: 2026-08-05
 excerpt: "C++26에 새로 추가된 Compile-time Reflection은 C++의 메타프로그래밍 방식을 크게 바꾸는 기능이다."
-tags: cpp
+tags: lang, cpp
 ---
 
 C++26에 새로 추가된 **Compile-time Reflection**은 C++의 메타프로그래밍 방식을 크게 바꾸는 기능이다.
